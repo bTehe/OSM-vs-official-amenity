@@ -1,0 +1,14 @@
+pandas>=2.2
+geopandas>=0.14
+shapely>=2.0
+pyogrio>=0.8
+requests>=2.31
+pyrosm>=0.6.2
+networkx>=3.2
+scipy>=1.11
+matplotlib>=3.8
+contextily>=1.5
+folium>=0.16
+mapclassify>=2.6
+libpysal>=4.10
+esda>=2.5
