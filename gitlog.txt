@@ -1,0 +1,29 @@
+commit 6d0b5be96890c26b354e860ecac43d95fbd48348
+Author: bTehe <66426840+bTehe@users.noreply.github.com>
+Date:   Wed May 13 10:58:32 2026 +0200
+
+    Document the Copenhagen access workflow
+
+commit 24fa2c39dd2ce91bef1ebbf398c025ec123a5591
+Author: bTehe <66426840+bTehe@users.noreply.github.com>
+Date:   Wed May 13 10:57:58 2026 +0200
+
+    Add notebook walkthroughs
+
+commit 826627d8d1c9f106e10e1aad8e95579ab30c4d6f
+Author: bTehe <66426840+bTehe@users.noreply.github.com>
+Date:   Wed May 13 10:57:19 2026 +0200
+
+    Add origin quality sensitivity workflow
+
+commit 78f274fe47cc942577c939360ae06dc53ad122a0
+Author: bTehe <66426840+bTehe@users.noreply.github.com>
+Date:   Wed May 13 10:56:46 2026 +0200
+
+    Add Copenhagen accessibility pipeline
+
+commit a63d0d1ce36b4e559efde888034e7bbaee50752f
+Author: bTehe <66426840+bTehe@users.noreply.github.com>
+Date:   Wed May 13 10:55:57 2026 +0200
+
+    Set up project skeleton
