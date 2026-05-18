@@ -1,145 +1,161 @@
-# Copenhagen OSM vs official amenity access
+# Copenhagen OSM vs Official Amenity Access
 
-This project asks a narrow question: if the walking network stays the same, how much does the destination data change a 15-minute walking access map?
+This project investigates how sensitive 15-minute walking accessibility estimates are to the choice of amenity dataset.
 
-We compare two versions of the same accessibility calculation for Copenhagen Municipality:
+The analysis compares two versions of the same accessibility workflow for Copenhagen Municipality:
 
-- OSM walking network plus official Copenhagen amenities
-- OSM walking network plus OSM amenities
+1. an OSM walking network with official Copenhagen amenity data,
+2. the same OSM walking network with OSM amenity data.
 
-That means the street network is held fixed. The comparison is about amenity completeness and classification, not whether OSM streets are better or worse than an official street network.
+The walking network is held constant in both cases. This means the comparison focuses on amenity completeness and classification, rather than differences between OSM streets and an official street network.
 
-The amenity types are libraries, playgrounds, and sports facilities.
+The amenity categories analysed are:
 
-## how to run it
+- libraries,
+- playgrounds,
+- sports facilities.
 
-There are two ways to run the project.
+## How to run the project
 
-For the command line version:
+The project can be run either from the command line or through the notebook.
 
-```powershell
+To run the full command-line pipeline:
+
+```bash
 python src/run_pipeline.py
 ```
 
-For the notebook version, open:
+To run the notebook version, open:
 
 ```text
 notebooks/copenhagen_osm_accessibility_pipeline.ipynb
 ```
 
-The notebook is a readable runner around the scripts in `src/`. We kept the actual code in scripts because it is easier to rerun, test, and fix there. The notebook gives the same workflow in smaller chunks with notes.
+The notebook provides a readable walkthrough of the workflow. The main implementation is kept in the scripts in `src/`, which makes the pipeline easier to rerun, test, and maintain.
 
-## data you need
+## Data requirements
 
-The official Copenhagen data are downloaded automatically from Open Data DK / Copenhagen CKAN:
+Official Copenhagen amenity and boundary data are downloaded automatically from Open Data DK / Københavns Kommune CKAN:
 
 ```text
 https://admin.opendata.dk/api/3/action
 ```
 
-The downloader looks for GeoJSON first, then SHP, then CSV. It saves the source links and local filenames in:
+The downloader searches for available resources in the following order:
+
+1. GeoJSON,
+2. SHP,
+3. CSV.
+
+Source links and local filenames are saved in:
 
 ```text
 data/raw/official/official_download_metadata.csv
 outputs/tables/official_download_metadata.csv
 ```
 
-The OSM PBF is different. This project does not download it.
-
-Put the Denmark PBF here:
+The OpenStreetMap PBF extract is not downloaded automatically. The Denmark PBF file must be placed manually at:
 
 ```text
 data/raw/osm/denmark-latest.osm.pbf
 ```
 
-The OSM extraction script checks that exact path before doing anything else. If the file is missing, it stops with a clear error.
+The OSM extraction script checks this path before running. If the file is missing, the script stops with a clear error message.
 
-## environment
+## Environment
 
-On Windows, we would use conda-forge. `pyrosm` is the package most likely to be annoying from plain pip.
+On Windows, the recommended setup uses `conda-forge`, especially because geospatial dependencies and `pyrosm` are easier to install through conda.
 
-```powershell
+```bash
 conda create -n cph-osm-access -c conda-forge python=3.11 geopandas pyrosm networkx scipy matplotlib contextily folium mapclassify libpysal esda requests
 conda activate cph-osm-access
 ```
 
-Pip can also work if your geospatial stack is already behaving:
+A pip-based setup can also be used if the local geospatial Python environment is already configured correctly:
 
-```powershell
+```bash
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-## pipeline order
+## Pipeline order
 
-The order looks a little odd because the Copenhagen boundary has to exist before the OSM PBF can be clipped to the study area.
+The processing order is structured so that the Copenhagen boundary is available before the OSM PBF extract is clipped to the study area.
 
-1. `src/01_download_official_data.py`
-2. `src/03_clean_official_amenities.py`
-3. `src/02_extract_osm_data.py`
-4. `src/04_clean_osm_amenities.py`
-5. `src/05_prepare_walking_network.py`
-6. `src/06_create_origin_grid.py`
-7. `src/07_match_osm_to_official.py`
-8. `src/08_compute_accessibility.py`
-9. `src/09_compare_accessibility.py`
-10. `src/10_make_maps.py`
-11. `src/11_diagnose_origin_quality.py`
-12. `src/12_assign_districts_by_overlap.py`
-13. `src/13_diagnose_snapping_outliers.py`
-14. `src/14_create_clean_origin_set.py`
-15. `src/15_rerun_accessibility_for_clean_origins.py`
-16. `src/16_rerun_district_summaries.py`
-17. `src/17_compare_baseline_vs_cleaned.py`
-18. `src/18_make_cleaned_maps.py`
+```text
+src/01_download_official_data.py
+src/03_clean_official_amenities.py
+src/02_extract_osm_data.py
+src/04_clean_osm_amenities.py
+src/05_prepare_walking_network.py
+src/06_create_origin_grid.py
+src/07_match_osm_to_official.py
+src/08_compute_accessibility.py
+src/09_compare_accessibility.py
+src/10_make_maps.py
+src/11_diagnose_origin_quality.py
+src/12_assign_districts_by_overlap.py
+src/13_diagnose_snapping_outliers.py
+src/14_create_clean_origin_set.py
+src/15_rerun_accessibility_for_clean_origins.py
+src/16_rerun_district_summaries.py
+src/17_compare_baseline_vs_cleaned.py
+src/18_make_cleaned_maps.py
+```
 
-Optional Moran / LISA analysis:
+Optional Moran / LISA analysis can be run with:
 
-```powershell
+```bash
 python src/09_compare_accessibility.py --moran
 ```
 
-## amenity definitions
+## Amenity definitions
 
 Official Copenhagen layers:
 
-- libraries: `Biblioteker`
-- playgrounds: `Legepladser`
-- sports facilities: `Idraetsanlaeg`
-- districts and boundary: `Bydele`
+| Amenity type | Official dataset |
+|---|---|
+| Libraries | Biblioteker |
+| Playgrounds | Legepladser |
+| Sports facilities | Idrætsanlæg |
+| Districts and boundary | Bydele |
 
 OSM tags:
 
-- libraries: `amenity=library`
-- playgrounds: `leisure=playground`
-- sports facilities: `leisure=sports_centre` or `leisure=sports_hall`
+| Amenity type | OSM tags |
+|---|---|
+| Libraries | `amenity=library` |
+| Playgrounds | `leisure=playground` |
+| Sports facilities | `leisure=sports_centre` or `leisure=sports_hall` |
 
-We leave out `leisure=pitch` in the main analysis. In Copenhagen, pitches can be individual fields rather than whole sports facilities, so mixing them into the main sports category would change the meaning of the comparison.
+The main analysis excludes `leisure=pitch`. In Copenhagen, pitches can represent individual fields rather than complete sports facilities, so including them would change the meaning of the sports-facility comparison.
 
-## origin-quality fix
+## Origin-quality correction
 
-The first baseline run exposed two problems that were too large to ignore:
+The first baseline run identified two origin-quality issues:
 
-- 103 origin points ended up with district `Unassigned`
-- 87 of 475 origins snapped more than 100 m from the walking network
+- 103 origin points were assigned to `Unassigned`,
+- 87 of 475 origins snapped more than 100 m from the walking network.
 
-The fix is now part of the pipeline.
+These issues were addressed in the final workflow.
 
-Districts are assigned by largest area overlap between the 500 m grid cell and the Bydele polygons. That works better than centroid assignment for coastal and harbour-edge cells.
+District assignment is now based on the largest area overlap between each 500 m grid cell and the Bydele district polygons. This is more reliable than centroid-based assignment for coastal and harbour-edge cells.
 
-The project also keeps three origin sets:
+The project keeps three origin sets:
 
-- `full`: all 475 origins, kept as the baseline
-- `clean100`: removes origins snapped more than 100 m away and weak district-overlap cells
-- `clean250`: a softer sensitivity version that removes origins snapped more than 250 m away
+| Origin set | Description |
+|---|---|
+| `full` | All 475 origins, retained as the baseline |
+| `clean100` | Removes origins snapped more than 100 m from the walking network and origins with weak district overlap |
+| `clean250` | A less strict sensitivity version that removes origins snapped more than 250 m from the walking network |
 
-For the final maps, we use `clean100`. The baseline stays in the outputs so the cleaning choice is visible instead of hidden.
+The final maps use the `clean100` origin set. The baseline outputs are retained so that the effect of the cleaning step remains visible.
 
-## outputs we check first
+## Output files used for validation
 
-These are the files we usually open before looking at the maps:
+Before interpreting the maps, the following diagnostic outputs are reviewed:
 
 ```text
 outputs/tables/poi_completeness_summary.csv
@@ -150,7 +166,7 @@ outputs/tables/robustness_summary_by_origin_set.csv
 outputs/tables/robustness_interpretation.md
 ```
 
-The corrected district summaries are:
+The corrected district-level accessibility summaries are stored in:
 
 ```text
 outputs/tables/district_accessibility_summary_full_corrected.csv
@@ -158,15 +174,21 @@ outputs/tables/district_accessibility_summary_clean100.csv
 outputs/tables/district_accessibility_summary_clean250.csv
 ```
 
-The recommended final maps are written as:
+The final maps used for the main `clean100` analysis are saved as:
 
 ```text
 outputs/figures/clean100_*.png
 ```
 
-The baseline maps are still in `outputs/figures/` without the `clean100_` prefix.
+Baseline maps without the `clean100_` prefix are also available in:
 
-## main processed files
+```text
+outputs/figures/
+```
+
+## Main processed files
+
+The main processed spatial outputs are stored in `data/processed/`:
 
 ```text
 data/processed/official_libraries.gpkg
@@ -182,4 +204,4 @@ data/processed/origins_grid_500m_clean100.gpkg
 data/processed/origins_points_500m_clean100.gpkg
 ```
 
-All distance work uses EPSG:25832. The scripts also keep WGS84 copies where that is useful for storage or web mapping.
+All distance-based processing is carried out in EPSG:25832, which allows distances to be measured in metres. WGS84 copies are also retained where useful for storage, sharing, or web mapping.
