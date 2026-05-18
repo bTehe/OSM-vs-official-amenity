@@ -2,7 +2,7 @@
 
 This project asks a narrow question: if the walking network stays the same, how much does the destination data change a 15-minute walking access map?
 
-I compare two versions of the same accessibility calculation for Copenhagen Municipality:
+We compare two versions of the same accessibility calculation for Copenhagen Municipality:
 
 - OSM walking network plus official Copenhagen amenities
 - OSM walking network plus OSM amenities
@@ -27,7 +27,7 @@ For the notebook version, open:
 notebooks/copenhagen_osm_accessibility_pipeline.ipynb
 ```
 
-The notebook is a readable runner around the scripts in `src/`. I kept the actual code in scripts because it is easier to rerun, test, and fix there. The notebook gives the same workflow in smaller chunks with notes.
+The notebook is a readable runner around the scripts in `src/`. We kept the actual code in scripts because it is easier to rerun, test, and fix there. The notebook gives the same workflow in smaller chunks with notes.
 
 ## data you need
 
@@ -56,7 +56,7 @@ The OSM extraction script checks that exact path before doing anything else. If 
 
 ## environment
 
-On Windows, I would use conda-forge. `pyrosm` is the package most likely to be annoying from plain pip.
+On Windows, We would use conda-forge. `pyrosm` is the package most likely to be annoying from plain pip.
 
 ```powershell
 conda create -n cph-osm-access -c conda-forge python=3.11 geopandas pyrosm networkx scipy matplotlib contextily folium mapclassify libpysal esda requests
@@ -116,7 +116,7 @@ OSM tags:
 - playgrounds: `leisure=playground`
 - sports facilities: `leisure=sports_centre` or `leisure=sports_hall`
 
-I leave out `leisure=pitch` in the main analysis. In Copenhagen, pitches can be individual fields rather than whole sports facilities, so mixing them into the main sports category would change the meaning of the comparison.
+We leave out `leisure=pitch` in the main analysis. In Copenhagen, pitches can be individual fields rather than whole sports facilities, so mixing them into the main sports category would change the meaning of the comparison.
 
 ## origin-quality fix
 
@@ -135,11 +135,11 @@ The project also keeps three origin sets:
 - `clean100`: removes origins snapped more than 100 m away and weak district-overlap cells
 - `clean250`: a softer sensitivity version that removes origins snapped more than 250 m away
 
-For the final maps, I use `clean100`. The baseline stays in the outputs so the cleaning choice is visible instead of hidden.
+For the final maps, We use `clean100`. The baseline stays in the outputs so the cleaning choice is visible instead of hidden.
 
-## outputs I check first
+## outputs We check first
 
-These are the files I usually open before looking at the maps:
+These are the files We usually open before looking at the maps:
 
 ```text
 outputs/tables/poi_completeness_summary.csv
