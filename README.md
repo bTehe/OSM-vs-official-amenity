@@ -56,7 +56,7 @@ The OSM extraction script checks that exact path before doing anything else. If 
 
 ## environment
 
-On Windows, We would use conda-forge. `pyrosm` is the package most likely to be annoying from plain pip.
+On Windows, we would use conda-forge. `pyrosm` is the package most likely to be annoying from plain pip.
 
 ```powershell
 conda create -n cph-osm-access -c conda-forge python=3.11 geopandas pyrosm networkx scipy matplotlib contextily folium mapclassify libpysal esda requests
@@ -135,11 +135,11 @@ The project also keeps three origin sets:
 - `clean100`: removes origins snapped more than 100 m away and weak district-overlap cells
 - `clean250`: a softer sensitivity version that removes origins snapped more than 250 m away
 
-For the final maps, We use `clean100`. The baseline stays in the outputs so the cleaning choice is visible instead of hidden.
+For the final maps, we use `clean100`. The baseline stays in the outputs so the cleaning choice is visible instead of hidden.
 
-## outputs We check first
+## outputs we check first
 
-These are the files We usually open before looking at the maps:
+These are the files we usually open before looking at the maps:
 
 ```text
 outputs/tables/poi_completeness_summary.csv
